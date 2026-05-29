@@ -113,13 +113,30 @@ npm run preview   # sirve la compilación de producción
 
 HTML + JavaScript puro, sin dependencias ni *build*: abre `web/index.html` directamente o sírvelo con `cd web && python3 -m http.server`.
 
-### Despliegue web (GitHub Pages)
+### Despliegue en Vercel (recomendado)
 
-El workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) compila `app/` y la publica en GitHub Pages en cada *push* a `main`. URL una vez fusionado este PR:
+Como Vite genera un sitio estático, Vercel lo sirve sin configuración de servidor. Dos formas:
+
+**A. Importar desde el dashboard** — la más simple:
+1. [vercel.com/new](https://vercel.com/new) → *Import* el repo `simulador-amplificadores-bjt`.
+2. En **Root Directory** elige `app` → Vercel detecta **Vite** (build `npm run build`, salida `dist`).
+3. *Deploy*. Cada *push* despliega automáticamente.
+
+**B. Con el [`vercel.json`](vercel.json) incluido** (deja Root Directory en la raíz) o con la CLI:
+```bash
+npm i -g vercel
+vercel          # despliegue de previsualización
+vercel --prod   # despliegue a producción
+```
+El `vercel.json` ya define `installCommand`/`buildCommand`/`outputDirectory` apuntando a `app/`, así que el deploy desde la raíz funciona tal cual.
+
+### Despliegue en GitHub Pages (alternativa)
+
+El workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) compila `app/` y la publica en GitHub Pages en cada *push* a `main`:
 
 **https://davixcky.github.io/simulador-amplificadores-bjt/**
 
-(Como Vite usa `base: './'`, las rutas son relativas y también funciona servida desde cualquier subcarpeta.)
+(Vite usa `base: './'` → rutas relativas, válido tanto en Pages como en Vercel o en cualquier subcarpeta.)
 
 ### Dentro de la app
 
@@ -143,20 +160,20 @@ npm run render     # renderiza video/out/bjt-amplificadores.mp4
 
 ---
 
-## Cómo regenerar el PDF de etiquetas
+## Cómo regenerar el PDF de etiquetas (Node, sin Python)
 
-Las etiquetas Niimbot (50 × 30 mm) resumen cada circuito en formato imprimible.
+Las etiquetas Niimbot (50 × 30 mm) resumen cada circuito en formato imprimible. El generador usa **Node + [pdfkit](https://pdfkit.org/)** y la fuente DejaVu Sans embebida en [`etiquetas/fonts/`](etiquetas/fonts/) (sin dependencias de Python).
 
 ```bash
-python3 etiquetas/generar_etiquetas.py     # requiere reportlab
+npm install            # una vez: instala pdfkit (raíz del repo)
+npm run etiquetas      # genera etiquetas/etiquetas-bjt.pdf (3 páginas) + etiquetas-hoja.pdf (las 3 apiladas)
 ```
 
-> Instala la dependencia con `pip install reportlab` si no la tienes.
-
-Para previsualizar el PDF como imagen (sin abrir un visor):
+Para previsualizar el PDF como imagen se usa `pdftoppm` (de **poppler**, no Python):
 
 ```bash
-pdftoppm -png -r 300 etiquetas/etiquetas.pdf etiquetas/preview
+pdftoppm -png -r 600 etiquetas/etiquetas-bjt.pdf   etiquetas/preview        # preview-1/2/3.png
+pdftoppm -png -r 600 etiquetas/etiquetas-hoja.pdf  etiquetas/preview-todas  # hoja de contacto
 ```
 
 ---
@@ -168,12 +185,16 @@ simulador-amplificadores-bjt/
 ├── app/          # App React (Vite + TypeScript) — versión principal
 ├── web/          # Web app vanilla (sin build) — fallback
 ├── video/        # Proyecto Remotion + mp4 renderizado (out/)
-├── etiquetas/    # Generador de etiquetas Niimbot 50×30 mm (PDF + previews)
+├── etiquetas/    # Generador de etiquetas Niimbot 50×30 mm (Node/pdfkit + fonts/)
 ├── datos/        # circuitos.json — fuente única de verdad de los números
 ├── docs/         # Apuntes de estudio + capturas
-├── scripts/      # Auto-prueba del motor y generador de datos para la web
+├── scripts/      # Auto-prueba del motor (engine.test.js) y gen_data.mjs
+├── package.json  # Herramientas Node (etiquetas, datos, test) — sin Python
+├── vercel.json   # Configuración de despliegue en Vercel
 └── .github/      # Workflow de despliegue en GitHub Pages
 ```
+
+> **Sin Python:** todo el *tooling* es Node (`npm run etiquetas`, `npm run datos`, `npm test`). El antiguo generador en Python se reemplazó por `etiquetas/generar_etiquetas.mjs` (pdfkit).
 
 ---
 
@@ -190,7 +211,7 @@ Salida esperada: una línea por magnitud verificada de cada circuito y, al final
 Para regenerar `web/circuitos.data.js` tras editar el JSON:
 
 ```bash
-python3 scripts/gen_data.py
+npm run datos      # node scripts/gen_data.mjs
 ```
 
 ---
