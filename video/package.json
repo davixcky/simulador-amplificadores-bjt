@@ -1,0 +1,23 @@
+{
+  "name": "bjt-video",
+  "version": "1.0.0",
+  "description": "Video didactico en espanol sobre los 3 amplificadores BJT, hecho con Remotion",
+  "private": true,
+  "scripts": {
+    "start": "remotion studio",
+    "render": "remotion render BJT out/bjt-amplificadores.mp4 --browser-executable=/usr/bin/google-chrome-stable --gl=angle --concurrency=2",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.380",
+    "@remotion/renderer": "4.0.380",
+    "@remotion/transitions": "4.0.380",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.380"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "typescript": "5.5.4"
+  }
+}

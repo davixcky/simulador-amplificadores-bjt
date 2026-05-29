@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .DS_Store
 .venv/
+app/dist/
+video/out/*.txt
+*.log

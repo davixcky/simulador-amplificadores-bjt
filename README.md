@@ -97,24 +97,49 @@ El motor de cálculo trabaja con el **modelo r_e** de señal pequeña y estas hi
 
 ## Cómo usar la web app
 
-La aplicación es estática (HTML + JavaScript, sin dependencias ni *build*). Tienes tres formas de abrirla:
+Hay **dos versiones** de la misma aplicación (idéntica funcionalidad y mismo motor de cálculo):
 
-1. **Abrir el archivo directamente.** Haz doble clic en `web/index.html` o ábrelo en el navegador (`Archivo → Abrir`).
+### App React (Vite + TypeScript) — versión principal · `app/`
 
-2. **Servir con un servidor local** (recomendado, evita restricciones de algunos navegadores al abrir `file://`):
+```bash
+cd app
+npm install
+npm run dev       # servidor de desarrollo (http://localhost:5173)
+npm run build     # compila a app/dist (estático, listo para desplegar)
+npm run preview   # sirve la compilación de producción
+```
 
-   ```bash
-   cd web
-   python3 -m http.server
-   # luego abre http://localhost:8000 en el navegador
-   ```
+### Versión sin compilación (vanilla, *fallback*) — `web/`
 
-3. **Desplegar en GitHub Pages.** Publica el contenido de `web/` (o configura Pages sobre la carpeta `web/`) y comparte la URL.
+HTML + JavaScript puro, sin dependencias ni *build*: abre `web/index.html` directamente o sírvelo con `cd web && python3 -m http.server`.
 
-Dentro de la app:
+### Despliegue web (GitHub Pages)
 
-- **Modo claro/oscuro:** botón de tema para alternar entre los dos esquemas de color.
-- **Sliders:** mueve los controles para cambiar los valores ajustables de cada circuito (`RF`, `RC`, `RE`, `β`, `VCC`, `R1`, `R2`, `RB`…). Las tablas DC/AC y las formas de onda se recalculan **en tiempo real** con el mismo motor (`web/engine.js`) que valida la auto-prueba.
+El workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) compila `app/` y la publica en GitHub Pages en cada *push* a `main`. URL una vez fusionado este PR:
+
+**https://davixcky.github.io/simulador-amplificadores-bjt/**
+
+(Como Vite usa `base: './'`, las rutas son relativas y también funciona servida desde cualquier subcarpeta.)
+
+### Dentro de la app
+
+- **Modo claro/oscuro:** botón de tema (persistido en `localStorage`, inicial según el sistema). Enlazable con `?tema=claro|oscuro` y `?circuito=c1|c2|c3`.
+- **Sliders:** cambia los valores ajustables (`RF`, `RC`, `RE`, `β`, `VCC`, `R1`, `R2`, `RB`…); las tarjetas DC/AC, las ecuaciones y la **simulación de señal** (inversión de fase + recorte) se recalculan **en tiempo real** con el mismo motor (`engine.ts` / `engine.js`) que valida la auto-prueba.
+
+---
+
+## Vídeo explicativo (Remotion)
+
+Vídeo animado y didáctico (1280×720, ~22 s) renderizado con [Remotion](https://www.remotion.dev/): intro, una escena por circuito con su esquema y métricas DC/AC, y la animación de señal con la inversión de fase. Archivo: [`video/out/bjt-amplificadores.mp4`](video/out/bjt-amplificadores.mp4).
+
+![Fotograma del vídeo](docs/capturas/video-poster.png)
+
+```bash
+cd video
+npm install
+npm start          # Remotion Studio (previsualización interactiva)
+npm run render     # renderiza video/out/bjt-amplificadores.mp4
+```
 
 ---
 
@@ -140,11 +165,14 @@ pdftoppm -png -r 300 etiquetas/etiquetas.pdf etiquetas/preview
 
 ```
 simulador-amplificadores-bjt/
-├── web/          # Web app interactiva (engine.js, datos generados, UI)
-├── etiquetas/    # Generador de etiquetas Niimbot 50×30 mm (PDF)
+├── app/          # App React (Vite + TypeScript) — versión principal
+├── web/          # Web app vanilla (sin build) — fallback
+├── video/        # Proyecto Remotion + mp4 renderizado (out/)
+├── etiquetas/    # Generador de etiquetas Niimbot 50×30 mm (PDF + previews)
 ├── datos/        # circuitos.json — fuente única de verdad de los números
-├── docs/         # Apuntes de estudio (análisis paso a paso)
-└── scripts/      # Auto-prueba del motor y generador de datos para la web
+├── docs/         # Apuntes de estudio + capturas
+├── scripts/      # Auto-prueba del motor y generador de datos para la web
+└── .github/      # Workflow de despliegue en GitHub Pages
 ```
 
 ---
