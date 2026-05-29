@@ -13,14 +13,15 @@ interface Props {
 
 export default function PanelDC({ res, vcc }: Props) {
   const dc = res.dc
-  const items: [string, string][] = []
-  if (dc.VB !== undefined) items.push(['V_B', fmtTension(dc.VB)])
-  if (dc.VE !== undefined) items.push(['V_E', fmtTension(dc.VE)])
-  items.push(['I_B', fmtCorriente(dc.IB)])
-  items.push(['I_C', fmtCorriente(dc.IC)])
-  items.push(['I_E', fmtCorriente(dc.IE)])
-  items.push(['r_e', fmtOhm(dc.re)])
-  items.push(['V_CE', fmtTension(dc.VCE)])
+  // [símbolo, valor, esClave]: el resultado clave del panel DC es V_CE.
+  const items: [string, string, boolean][] = []
+  if (dc.VB !== undefined) items.push(['V_B', fmtTension(dc.VB), false])
+  if (dc.VE !== undefined) items.push(['V_E', fmtTension(dc.VE), false])
+  items.push(['I_B', fmtCorriente(dc.IB), false])
+  items.push(['I_C', fmtCorriente(dc.IC), false])
+  items.push(['I_E', fmtCorriente(dc.IE), false])
+  items.push(['r_e', fmtOhm(dc.re), false])
+  items.push(['V_CE', fmtTension(dc.VCE), true])
 
   // Aviso de región de operación (saturación / corte / activa).
   let avisoEstado: { texto: string } | null = null
@@ -56,16 +57,20 @@ export default function PanelDC({ res, vcc }: Props) {
 
   return (
     <article className="tarjeta">
+      <span className="micro-cabecera">Punto de operación · DC</span>
       <h2 className="tarjeta-titulo">Punto de operación (DC)</h2>
       {avisoEstado ? <div className="aviso aviso-peligro"><Sub>{avisoEstado.texto}</Sub></div> : null}
       {avisoMetodo ? <div className="aviso aviso-info">{avisoMetodo}</div> : null}
       <dl className="magnitudes">
-        {items.map(([sim, val]) => (
-          <div className="magnitud" key={sim}>
+        {items.map(([sim, val, clave]) => (
+          <div className={'magnitud' + (clave ? ' magnitud-clave' : '')} key={sim}>
             <dt>
               <Sub>{sim}</Sub>
             </dt>
-            <dd>{val}</dd>
+            {/* key={val} remonta el dd al recalcular → reactiva el flash. */}
+            <dd className="magnitud-flash" key={val}>
+              {val}
+            </dd>
           </div>
         ))}
       </dl>

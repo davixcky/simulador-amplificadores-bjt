@@ -11,13 +11,11 @@ Pensado como material de estudio: cada número que ves aquí también está desa
 
 ## Vista previa
 
-**Web app interactiva** (modo claro y oscuro, esquema en vivo, sliders y simulación de señal):
+**Web app interactiva** — diseño «Circuito Studio» (modo claro y oscuro, esquema en vivo, sliders, simulación de señal tipo osciloscopio y reproductor de animación bajo demanda):
 
 | Claro | Oscuro |
 |-------|--------|
-| ![Web claro](docs/capturas/c1-realimentacion-claro.png) | ![Web oscuro](docs/capturas/c1-realimentacion-oscuro.png) |
-
-Más capturas en [`docs/capturas/`](docs/capturas/) (divisor de voltaje y polarización de emisor).
+| ![Web claro](docs/capturas/ui-claro.png) | ![Web oscuro](docs/capturas/ui-oscuro.png) |
 
 **Etiquetas Niimbot (50 × 30 mm)** — las tres etiquetas apiladas:
 

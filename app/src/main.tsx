@@ -11,3 +11,12 @@ createRoot(document.getElementById('root')!).render(
     </ProveedorTema>
   </StrictMode>,
 )
+
+/* Activa la animación de entrada SOLO tras el primer pintado real. Doble rAF
+   garantiza que las tarjetas ya están visibles antes de animarlas; si el render
+   es headless/sin rAF, las tarjetas quedan visibles (la clase nunca se añade). */
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    document.documentElement.classList.add('con-entrada')
+  })
+})

@@ -38,6 +38,9 @@ export default function App() {
   // Valores actuales de TODOS los componentes (copia de los del preset).
   const [valores, setValores] = useState<Record<string, number>>({ ...preset.componentes })
 
+  // Componente resaltado en el esquema cuando un control tiene foco/hover (§4.7).
+  const [resaltado, setResaltado] = useState<string | null>(null)
+
   // Al cambiar de circuito, reinicia los valores a los del nuevo preset.
   const seleccionarCircuito = (id: string) => {
     setIdCircuito(id)
@@ -97,10 +100,16 @@ export default function App() {
       <main className="rejilla">
         {/* PANEL IZQUIERDO: esquema + controles */}
         <section className="columna columna-izquierda" aria-label="Esquema y controles">
-          <article className="tarjeta">
+          <article className="tarjeta tarjeta-esquema">
+            <span className="micro-cabecera">Esquema del circuito</span>
             <h2 className="tarjeta-titulo">{preset.nombre}</h2>
             <p className="tarjeta-subtitulo">{preset.subtitulo}</p>
-            <Esquema topologia={preset.topologia} config={config} reBypass={preset.re_bypass} />
+            <Esquema
+              topologia={preset.topologia}
+              config={config}
+              reBypass={preset.re_bypass}
+              resaltado={resaltado}
+            />
           </article>
 
           <Controles
@@ -109,6 +118,7 @@ export default function App() {
             valores={valores}
             onCambio={cambiarValor}
             onRestablecer={restablecer}
+            onResaltar={setResaltado}
           />
         </section>
 

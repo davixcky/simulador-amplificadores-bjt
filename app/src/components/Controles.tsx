@@ -2,6 +2,7 @@
  * Controles.tsx — Slider + campo numérico por componente ajustable, β y VCC.
  * Resistencias en escala logarítmica. Botón Restablecer.
  */
+import { useState } from 'react'
 import {
   etiquetaComponente,
   etiquetaTexto,
@@ -16,9 +17,12 @@ interface ControlProps {
   porDefecto: number
   valor: number
   onCambio: (nombre: string, valor: number) => void
+  onResaltar: (nombre: string | null) => void
 }
 
-function Control({ nombre, porDefecto, valor, onCambio }: ControlProps) {
+function Control({ nombre, porDefecto, valor, onCambio, onResaltar }: ControlProps) {
+  // Estado local de resaltado (label en acento) sincronizado con el del esquema.
+  const [activo, setActivo] = useState(false)
   const r = rangoComponente(nombre, porDefecto)
   const etiqueta = etiquetaComponente(nombre)
   const etqTexto = etiquetaTexto(nombre)
@@ -28,6 +32,10 @@ function Control({ nombre, porDefecto, valor, onCambio }: ControlProps) {
   const sliderMax = r.log ? 1000 : r.max
   const sliderStep = r.log ? 1 : r.paso
   const sliderValor = r.log ? valorAPosLog(valor, r) : valor
+
+  // Posición del relleno de progreso (0..100%) para el gradiente del track.
+  const pct = ((sliderValor - sliderMin) / (sliderMax - sliderMin)) * 100
+  const relleno = { '--relleno': `${Math.max(0, Math.min(100, pct))}%` } as React.CSSProperties
 
   const onSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
     const bruto = Number(e.target.value)
@@ -42,14 +50,31 @@ function Control({ nombre, porDefecto, valor, onCambio }: ControlProps) {
     onCambio(nombre, acotado)
   }
 
+  // Reporta el componente resaltado al pasar el ratón / enfocar (§4.7).
+  const activar = () => {
+    setActivo(true)
+    onResaltar(nombre)
+  }
+  const desactivar = () => {
+    setActivo(false)
+    onResaltar(null)
+  }
+
   return (
-    <div className="control-grupo">
+    <div
+      className={'control-grupo' + (activo ? ' control-activo' : '')}
+      onMouseEnter={activar}
+      onMouseLeave={desactivar}
+      onFocus={activar}
+      onBlur={desactivar}
+    >
       <label htmlFor={'sl-' + nombre}>{etiqueta}</label>
       <div className="fila-control">
         <input
           type="range"
           id={'sl-' + nombre}
           aria-label={etqTexto + ' (deslizador)'}
+          style={relleno}
           min={sliderMin}
           max={sliderMax}
           step={sliderStep}
@@ -79,9 +104,17 @@ interface Props {
   valores: Record<string, number>
   onCambio: (nombre: string, valor: number) => void
   onRestablecer: () => void
+  onResaltar: (nombre: string | null) => void
 }
 
-export default function Controles({ ajustables, porDefecto, valores, onCambio, onRestablecer }: Props) {
+export default function Controles({
+  ajustables,
+  porDefecto,
+  valores,
+  onCambio,
+  onRestablecer,
+  onResaltar,
+}: Props) {
   return (
     <article className="tarjeta">
       <div className="tarjeta-cabecera">
@@ -98,6 +131,7 @@ export default function Controles({ ajustables, porDefecto, valores, onCambio, o
             porDefecto={porDefecto[nombre]}
             valor={valores[nombre]}
             onCambio={onCambio}
+            onResaltar={onResaltar}
           />
         ))}
       </div>

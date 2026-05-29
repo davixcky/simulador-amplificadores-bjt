@@ -51,6 +51,7 @@ interface Props {
 export default function Ecuaciones({ ecuacionesDC, ecuacionesAC, config, res }: Props) {
   return (
     <article className="tarjeta">
+      <span className="micro-cabecera">Ecuaciones · sustitución en vivo</span>
       <h2 className="tarjeta-titulo">Ecuaciones</h2>
       <ListaEcuaciones titulo="Análisis DC" lista={ecuacionesDC} config={config} res={res} />
       <ListaEcuaciones titulo="Análisis AC" lista={ecuacionesAC} config={config} res={res} />
