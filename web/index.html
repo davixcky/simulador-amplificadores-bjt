@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulador interactivo de amplificadores BJT con análisis DC y AC (modelo re).">
+  <title>Simulador de Amplificadores BJT</title>
+  <!-- Hoja de estilos local (sin CDNs) -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ============ CABECERA ============ -->
+  <header class="cabecera">
+    <div class="cabecera-texto">
+      <h1>Simulador de Amplificadores BJT</h1>
+      <p class="subtitulo">Análisis DC y AC con el modelo r<sub>e</sub> · Supuestos: V<sub>BE</sub>&nbsp;=&nbsp;0.7&nbsp;V, V<sub>T</sub>&nbsp;=&nbsp;26&nbsp;mV, r<sub>o</sub>&nbsp;=&nbsp;∞</p>
+    </div>
+    <!-- Botón conmutador de tema claro/oscuro -->
+    <button id="btn-tema" class="btn-tema" type="button" aria-label="Cambiar tema claro u oscuro" title="Cambiar tema">
+      <span class="icono-tema" aria-hidden="true"></span>
+    </button>
+  </header>
+
+  <!-- ============ SELECTOR DE CIRCUITO ============ -->
+  <nav class="selector-circuito" id="selector-circuito" aria-label="Selección de circuito" role="tablist">
+    <!-- Pestañas generadas por app.js -->
+  </nav>
+
+  <!-- ============ DISTRIBUCIÓN PRINCIPAL ============ -->
+  <main class="rejilla" id="app">
+    <!-- ---- PANEL IZQUIERDO: esquema + controles ---- -->
+    <section class="columna columna-izquierda" aria-label="Esquema y controles">
+      <article class="tarjeta">
+        <h2 class="tarjeta-titulo" id="titulo-circuito">Esquema</h2>
+        <p class="tarjeta-subtitulo" id="subtitulo-circuito"></p>
+        <div class="esquema-contenedor" id="esquema"></div>
+      </article>
+
+      <article class="tarjeta">
+        <div class="tarjeta-cabecera">
+          <h2 class="tarjeta-titulo">Controles</h2>
+          <button id="btn-restablecer" class="btn-secundario" type="button">Restablecer</button>
+        </div>
+        <div class="controles" id="controles"></div>
+      </article>
+    </section>
+
+    <!-- ---- PANEL DERECHO: resultados ---- -->
+    <section class="columna columna-derecha" aria-label="Resultados del análisis">
+      <article class="tarjeta">
+        <h2 class="tarjeta-titulo">Punto de operación (DC)</h2>
+        <div id="aviso-estado" class="aviso" hidden></div>
+        <div id="aviso-metodo" class="aviso aviso-info" hidden></div>
+        <dl class="magnitudes" id="dc-valores"></dl>
+      </article>
+
+      <article class="tarjeta">
+        <h2 class="tarjeta-titulo">Análisis AC (modelo r<sub>e</sub>)</h2>
+        <dl class="magnitudes" id="ac-valores"></dl>
+        <p id="nota-ac" class="nota-ac" hidden></p>
+      </article>
+
+      <article class="tarjeta">
+        <h2 class="tarjeta-titulo">Ecuaciones</h2>
+        <div class="ecuaciones-bloque">
+          <h3 class="ecuaciones-titulo">Análisis DC</h3>
+          <div id="ecuaciones-dc" class="ecuaciones"></div>
+        </div>
+        <div class="ecuaciones-bloque">
+          <h3 class="ecuaciones-titulo">Análisis AC</h3>
+          <div id="ecuaciones-ac" class="ecuaciones"></div>
+        </div>
+      </article>
+
+      <article class="tarjeta">
+        <h2 class="tarjeta-titulo">Simulación de señal</h2>
+        <div class="control-senal">
+          <label for="slider-amplitud">Amplitud de entrada v<sub>i</sub></label>
+          <div class="fila-control">
+            <input type="range" id="slider-amplitud" min="1" max="50" step="1" value="10">
+            <output id="salida-amplitud" class="valor-amplitud">10 mV</output>
+          </div>
+        </div>
+        <canvas id="canvas-senal" width="560" height="300" role="img"
+                aria-label="Gráfica de las señales de entrada y salida del amplificador"></canvas>
+        <p id="aviso-recorte" class="aviso aviso-recorte" hidden>⚠ La salida satura: hay RECORTE de onda.</p>
+        <p class="leyenda-fase" id="leyenda-fase"></p>
+      </article>
+    </section>
+  </main>
+
+  <!-- ============ PIE ============ -->
+  <footer class="pie">
+    <p>Modelo simplificado de pequeña señal (r<sub>e</sub>, r<sub>o</sub>&nbsp;=&nbsp;∞). Valores orientativos para fines didácticos.</p>
+    <p class="pie-pdf">Para regenerar el PDF de referencia, ejecuta el generador del proyecto desde <code>datos/circuitos.json</code>.</p>
+  </footer>
+
+  <!-- Scripts locales EN ORDEN: datos → motor → aplicación -->
+  <script src="circuitos.data.js"></script>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

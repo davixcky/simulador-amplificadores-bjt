@@ -1,0 +1,294 @@
+/* Generado desde datos/circuitos.json — NO editar a mano. */
+window.CIRCUITOS = {
+  "meta": {
+    "titulo": "Amplificadores BJT — Análisis DC y AC (modelo re)",
+    "supuestos": "VBE = 0.7 V · VT = 26 mV · ro = ∞ · método aproximado del divisor cuando β·RE ≥ 10·R2",
+    "VBE": 0.7,
+    "VT": 0.026,
+    "fuente": "Boylestad — Electronic Devices and Circuit Theory"
+  },
+  "circuitos": [
+    {
+      "id": "c1",
+      "nombre": "Realimentación de colector",
+      "topologia": "collector_feedback",
+      "re_bypass": false,
+      "subtitulo": "RE sin desacoplar (sin condensador de emisor)",
+      "componentes": {
+        "VCC": 10,
+        "RF": 250000,
+        "RC": 4700,
+        "RE": 1200,
+        "beta": 90,
+        "C_in": 1e-05,
+        "C_out": 1e-05
+      },
+      "ajustables": [
+        "RF",
+        "RC",
+        "RE",
+        "beta",
+        "VCC"
+      ],
+      "dc": {
+        "IB": 1.1908e-05,
+        "IC": 0.0010717,
+        "IE": 0.0010836,
+        "re": 23.99,
+        "VCE": 3.663
+      },
+      "ac": {
+        "Av": -3.71,
+        "Av_simple": -3.84,
+        "Zi": 35950,
+        "Zi_simple": 35170,
+        "Zo": 4613,
+        "betaRe": 2159,
+        "Zb": 111359
+      },
+      "ecuaciones_dc": [
+        {
+          "lhs": "I_B",
+          "rhs": "(V_CC − V_BE) / (R_F + β·(R_C + R_E))",
+          "subst": "(10 − 0.7) / (250k + 90·5.9k)",
+          "val": "11.9 µA"
+        },
+        {
+          "lhs": "I_C",
+          "rhs": "β·I_B",
+          "subst": "90 · 11.9µ",
+          "val": "1.07 mA"
+        },
+        {
+          "lhs": "I_E",
+          "rhs": "(β+1)·I_B",
+          "subst": "91 · 11.9µ",
+          "val": "1.08 mA"
+        },
+        {
+          "lhs": "r_e",
+          "rhs": "26mV / I_E",
+          "subst": "26m / 1.08m",
+          "val": "24 Ω"
+        },
+        {
+          "lhs": "V_CE",
+          "rhs": "V_CC − I_C·R_C − I_E·R_E",
+          "subst": "10 − 5.04 − 1.30",
+          "val": "3.66 V"
+        }
+      ],
+      "ecuaciones_ac": [
+        {
+          "lhs": "A_v",
+          "rhs": "−R_C / (r_e + R_E)",
+          "subst": "−4.7k / 1.224k",
+          "val": "−3.84"
+        },
+        {
+          "lhs": "Z_i",
+          "rhs": "β(r_e+R_E) ∥ R_F/(1−A_v)",
+          "subst": "110k ∥ 51.7k",
+          "val": "35.2 kΩ"
+        },
+        {
+          "lhs": "Z_o",
+          "rhs": "R_C ∥ R_F",
+          "subst": "4.7k ∥ 250k",
+          "val": "4.61 kΩ"
+        }
+      ],
+      "nota": "La realimentación por R_F reduce un poco más la ganancia: A_v exacto ≈ −3.71 (modelo nodal)."
+    },
+    {
+      "id": "c2",
+      "nombre": "Divisor de voltaje",
+      "topologia": "voltage_divider",
+      "re_bypass": true,
+      "subtitulo": "RE desacoplado (CE = 50 µF)",
+      "componentes": {
+        "VCC": 22,
+        "R1": 39000,
+        "R2": 3900,
+        "RC": 10000,
+        "RE": 1500,
+        "beta": 100,
+        "C_in": 1e-05,
+        "C_out": 1e-05,
+        "C_E": 5e-05
+      },
+      "ajustables": [
+        "R1",
+        "R2",
+        "RC",
+        "RE",
+        "beta",
+        "VCC"
+      ],
+      "dc": {
+        "VB": 2.0,
+        "VE": 1.3,
+        "IB": 8.667e-06,
+        "IC": 0.0008667,
+        "IE": 0.0008667,
+        "re": 30.0,
+        "VCE": 12.033
+      },
+      "ac": {
+        "Av": -333.3,
+        "Zi": 1625,
+        "Zo": 10000,
+        "betaRe": 3000
+      },
+      "ecuaciones_dc": [
+        {
+          "lhs": "V_B",
+          "rhs": "V_CC·R2 / (R1 + R2)",
+          "subst": "22·3.9k / 42.9k",
+          "val": "2.0 V"
+        },
+        {
+          "lhs": "V_E",
+          "rhs": "V_B − V_BE",
+          "subst": "2.0 − 0.7",
+          "val": "1.3 V"
+        },
+        {
+          "lhs": "I_E",
+          "rhs": "V_E / R_E",
+          "subst": "1.3 / 1.5k",
+          "val": "0.867 mA"
+        },
+        {
+          "lhs": "I_C",
+          "rhs": "≈ I_E",
+          "subst": "",
+          "val": "0.867 mA"
+        },
+        {
+          "lhs": "r_e",
+          "rhs": "26mV / I_E",
+          "subst": "26m / 0.867m",
+          "val": "30 Ω"
+        },
+        {
+          "lhs": "V_CE",
+          "rhs": "V_CC − I_C·(R_C + R_E)",
+          "subst": "22 − 0.867m·11.5k",
+          "val": "12.03 V"
+        }
+      ],
+      "ecuaciones_ac": [
+        {
+          "lhs": "A_v",
+          "rhs": "−R_C / r_e",
+          "subst": "−10k / 30",
+          "val": "−333"
+        },
+        {
+          "lhs": "Z_i",
+          "rhs": "R1 ∥ R2 ∥ β·r_e",
+          "subst": "39k ∥ 3.9k ∥ 3k",
+          "val": "1.63 kΩ"
+        },
+        {
+          "lhs": "Z_o",
+          "rhs": "R_C",
+          "subst": "10k",
+          "val": "10 kΩ"
+        }
+      ],
+      "nota": "β·R_E = 150k ≥ 10·R2 = 39k → válido el método aproximado del divisor."
+    },
+    {
+      "id": "c3",
+      "nombre": "Polarización de emisor",
+      "topologia": "emitter_bias",
+      "re_bypass": true,
+      "subtitulo": "RB única + RE desacoplado (CE = 40 µF)",
+      "componentes": {
+        "VCC": 20,
+        "RB": 430000,
+        "RC": 2000,
+        "RE": 1000,
+        "beta": 50,
+        "C_in": 1e-05,
+        "C_out": 1e-05,
+        "C_E": 4e-05
+      },
+      "ajustables": [
+        "RB",
+        "RC",
+        "RE",
+        "beta",
+        "VCC"
+      ],
+      "dc": {
+        "IB": 4.0125e-05,
+        "IC": 0.0020062,
+        "IE": 0.0020464,
+        "re": 12.71,
+        "VCE": 13.941
+      },
+      "ac": {
+        "Av": -157.4,
+        "Zi": 634.3,
+        "Zo": 2000,
+        "betaRe": 635.5
+      },
+      "ecuaciones_dc": [
+        {
+          "lhs": "I_B",
+          "rhs": "(V_CC − V_BE) / (R_B + (β+1)·R_E)",
+          "subst": "(20 − 0.7) / (430k + 51·1k)",
+          "val": "40.1 µA"
+        },
+        {
+          "lhs": "I_C",
+          "rhs": "β·I_B",
+          "subst": "50 · 40.1µ",
+          "val": "2.01 mA"
+        },
+        {
+          "lhs": "I_E",
+          "rhs": "(β+1)·I_B",
+          "subst": "51 · 40.1µ",
+          "val": "2.05 mA"
+        },
+        {
+          "lhs": "r_e",
+          "rhs": "26mV / I_E",
+          "subst": "26m / 2.05m",
+          "val": "12.7 Ω"
+        },
+        {
+          "lhs": "V_CE",
+          "rhs": "V_CC − I_C·R_C − I_E·R_E",
+          "subst": "20 − 4.01 − 2.05",
+          "val": "13.94 V"
+        }
+      ],
+      "ecuaciones_ac": [
+        {
+          "lhs": "A_v",
+          "rhs": "−R_C / r_e",
+          "subst": "−2k / 12.7",
+          "val": "−157"
+        },
+        {
+          "lhs": "Z_i",
+          "rhs": "R_B ∥ β·r_e",
+          "subst": "430k ∥ 635",
+          "val": "635 Ω"
+        },
+        {
+          "lhs": "Z_o",
+          "rhs": "R_C",
+          "subst": "2k",
+          "val": "2 kΩ"
+        }
+      ],
+      "nota": "Polarización por una sola R_B; RE estabiliza el punto Q pero en AC está desacoplado."
+    }
+  ]
+};
