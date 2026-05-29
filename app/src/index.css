@@ -370,6 +370,18 @@ input[type="range"]::-moz-range-thumb {
 }
 .leyenda-fase { margin: .7rem 0 0; font-size: .82rem; color: var(--texto-tenue); }
 
+/* ---- Reproductor de animación (Remotion Player) ---- */
+.reproductor-animacion {
+  margin-top: .8rem;
+  width: 100%;
+  border-radius: var(--radio-chico);
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  background: #0b1020;            /* fondo del lienzo mientras carga */
+  line-height: 0;                 /* evita huecos bajo el <video>/<canvas> */
+}
+.reproductor-animacion :focus-visible { box-shadow: none; }
+
 /* ---- Pie ---- */
 .pie {
   max-width: 1180px;

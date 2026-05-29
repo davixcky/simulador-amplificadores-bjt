@@ -14,6 +14,7 @@ import PanelDC from './components/PanelDC'
 import PanelAC from './components/PanelAC'
 import Ecuaciones from './components/Ecuaciones'
 import SimulacionSenal from './components/SimulacionSenal'
+import Animacion from './components/Animacion'
 
 /** Circuito inicial: respeta ?circuito=c1|c2|c3 si es válido. */
 function circuitoInicial(): string {
@@ -124,6 +125,7 @@ export default function App() {
                 res={resultado}
               />
               <SimulacionSenal res={resultado} config={config} />
+              <Animacion circuito={preset} valores={valores} />
             </>
           ) : null}
         </section>
