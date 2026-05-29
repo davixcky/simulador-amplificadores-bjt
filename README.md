@@ -97,41 +97,83 @@ El motor de cálculo trabaja con el **modelo r_e** de señal pequeña y estas hi
 
 ## Cómo usar la web app
 
-La aplicación es estática (HTML + JavaScript, sin dependencias ni *build*). Tienes tres formas de abrirla:
+Hay **dos versiones** de la misma aplicación (idéntica funcionalidad y mismo motor de cálculo):
 
-1. **Abrir el archivo directamente.** Haz doble clic en `web/index.html` o ábrelo en el navegador (`Archivo → Abrir`).
+### App React (Vite + TypeScript) — versión principal · `app/`
 
-2. **Servir con un servidor local** (recomendado, evita restricciones de algunos navegadores al abrir `file://`):
+```bash
+cd app
+npm install
+npm run dev       # servidor de desarrollo (http://localhost:5173)
+npm run build     # compila a app/dist (estático, listo para desplegar)
+npm run preview   # sirve la compilación de producción
+```
 
-   ```bash
-   cd web
-   python3 -m http.server
-   # luego abre http://localhost:8000 en el navegador
-   ```
+### Versión sin compilación (vanilla, *fallback*) — `web/`
 
-3. **Desplegar en GitHub Pages.** Publica el contenido de `web/` (o configura Pages sobre la carpeta `web/`) y comparte la URL.
+HTML + JavaScript puro, sin dependencias ni *build*: abre `web/index.html` directamente o sírvelo con `cd web && python3 -m http.server`.
 
-Dentro de la app:
+### Despliegue en Vercel (recomendado)
 
-- **Modo claro/oscuro:** botón de tema para alternar entre los dos esquemas de color.
-- **Sliders:** mueve los controles para cambiar los valores ajustables de cada circuito (`RF`, `RC`, `RE`, `β`, `VCC`, `R1`, `R2`, `RB`…). Las tablas DC/AC y las formas de onda se recalculan **en tiempo real** con el mismo motor (`web/engine.js`) que valida la auto-prueba.
+Como Vite genera un sitio estático, Vercel lo sirve sin configuración de servidor. Dos formas:
+
+**A. Importar desde el dashboard** — la más simple:
+1. [vercel.com/new](https://vercel.com/new) → *Import* el repo `simulador-amplificadores-bjt`.
+2. En **Root Directory** elige `app` → Vercel detecta **Vite** (build `npm run build`, salida `dist`).
+3. *Deploy*. Cada *push* despliega automáticamente.
+
+**B. Con el [`vercel.json`](vercel.json) incluido** (deja Root Directory en la raíz) o con la CLI:
+```bash
+npm i -g vercel
+vercel          # despliegue de previsualización
+vercel --prod   # despliegue a producción
+```
+El `vercel.json` ya define `installCommand`/`buildCommand`/`outputDirectory` apuntando a `app/`, así que el deploy desde la raíz funciona tal cual.
+
+### Despliegue en GitHub Pages (alternativa)
+
+El workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) compila `app/` y la publica en GitHub Pages en cada *push* a `main`:
+
+**https://davixcky.github.io/simulador-amplificadores-bjt/**
+
+(Vite usa `base: './'` → rutas relativas, válido tanto en Pages como en Vercel o en cualquier subcarpeta.)
+
+### Dentro de la app
+
+- **Modo claro/oscuro:** botón de tema (persistido en `localStorage`, inicial según el sistema). Enlazable con `?tema=claro|oscuro` y `?circuito=c1|c2|c3`.
+- **Sliders:** cambia los valores ajustables (`RF`, `RC`, `RE`, `β`, `VCC`, `R1`, `R2`, `RB`…); las tarjetas DC/AC, las ecuaciones y la **simulación de señal** (inversión de fase + recorte) se recalculan **en tiempo real** con el mismo motor (`engine.ts` / `engine.js`) que valida la auto-prueba.
 
 ---
 
-## Cómo regenerar el PDF de etiquetas
+## Vídeo explicativo (Remotion)
 
-Las etiquetas Niimbot (50 × 30 mm) resumen cada circuito en formato imprimible.
+Vídeo animado y didáctico (1280×720, ~22 s) renderizado con [Remotion](https://www.remotion.dev/): intro, una escena por circuito con su esquema y métricas DC/AC, y la animación de señal con la inversión de fase. Archivo: [`video/out/bjt-amplificadores.mp4`](video/out/bjt-amplificadores.mp4).
+
+![Fotograma del vídeo](docs/capturas/video-poster.png)
 
 ```bash
-python3 etiquetas/generar_etiquetas.py     # requiere reportlab
+cd video
+npm install
+npm start          # Remotion Studio (previsualización interactiva)
+npm run render     # renderiza video/out/bjt-amplificadores.mp4
 ```
 
-> Instala la dependencia con `pip install reportlab` si no la tienes.
+---
 
-Para previsualizar el PDF como imagen (sin abrir un visor):
+## Cómo regenerar el PDF de etiquetas (Node, sin Python)
+
+Las etiquetas Niimbot (50 × 30 mm) resumen cada circuito en formato imprimible. El generador usa **Node + [pdfkit](https://pdfkit.org/)** y la fuente DejaVu Sans embebida en [`etiquetas/fonts/`](etiquetas/fonts/) (sin dependencias de Python).
 
 ```bash
-pdftoppm -png -r 300 etiquetas/etiquetas.pdf etiquetas/preview
+npm install            # una vez: instala pdfkit (raíz del repo)
+npm run etiquetas      # genera etiquetas/etiquetas-bjt.pdf (3 páginas) + etiquetas-hoja.pdf (las 3 apiladas)
+```
+
+Para previsualizar el PDF como imagen se usa `pdftoppm` (de **poppler**, no Python):
+
+```bash
+pdftoppm -png -r 600 etiquetas/etiquetas-bjt.pdf   etiquetas/preview        # preview-1/2/3.png
+pdftoppm -png -r 600 etiquetas/etiquetas-hoja.pdf  etiquetas/preview-todas  # hoja de contacto
 ```
 
 ---
@@ -140,12 +182,19 @@ pdftoppm -png -r 300 etiquetas/etiquetas.pdf etiquetas/preview
 
 ```
 simulador-amplificadores-bjt/
-├── web/          # Web app interactiva (engine.js, datos generados, UI)
-├── etiquetas/    # Generador de etiquetas Niimbot 50×30 mm (PDF)
+├── app/          # App React (Vite + TypeScript) — versión principal
+├── web/          # Web app vanilla (sin build) — fallback
+├── video/        # Proyecto Remotion + mp4 renderizado (out/)
+├── etiquetas/    # Generador de etiquetas Niimbot 50×30 mm (Node/pdfkit + fonts/)
 ├── datos/        # circuitos.json — fuente única de verdad de los números
-├── docs/         # Apuntes de estudio (análisis paso a paso)
-└── scripts/      # Auto-prueba del motor y generador de datos para la web
+├── docs/         # Apuntes de estudio + capturas
+├── scripts/      # Auto-prueba del motor (engine.test.js) y gen_data.mjs
+├── package.json  # Herramientas Node (etiquetas, datos, test) — sin Python
+├── vercel.json   # Configuración de despliegue en Vercel
+└── .github/      # Workflow de despliegue en GitHub Pages
 ```
+
+> **Sin Python:** todo el *tooling* es Node (`npm run etiquetas`, `npm run datos`, `npm test`). El antiguo generador en Python se reemplazó por `etiquetas/generar_etiquetas.mjs` (pdfkit).
 
 ---
 
@@ -162,7 +211,7 @@ Salida esperada: una línea por magnitud verificada de cada circuito y, al final
 Para regenerar `web/circuitos.data.js` tras editar el JSON:
 
 ```bash
-python3 scripts/gen_data.py
+npm run datos      # node scripts/gen_data.mjs
 ```
 
 ---

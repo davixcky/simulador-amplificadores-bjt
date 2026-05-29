@@ -1,0 +1,13 @@
+{
+  "name": "simulador-amplificadores-bjt-tooling",
+  "private": true,
+  "description": "Herramientas Node del proyecto (etiquetas PDF, datos, prueba del motor). Sin dependencia de Python. Los .mjs son ESM; engine.test.js es CommonJS.",
+  "scripts": {
+    "etiquetas": "node etiquetas/generar_etiquetas.mjs",
+    "datos": "node scripts/gen_data.mjs",
+    "test": "node scripts/engine.test.js"
+  },
+  "devDependencies": {
+    "pdfkit": "^0.15.0"
+  }
+}

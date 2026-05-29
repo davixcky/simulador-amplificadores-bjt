@@ -1,0 +1,3 @@
+DejaVu Fonts — Bitstream Vera / Arev derivative, free license.
+Fuente: https://dejavu-fonts.github.io/  (redistribución permitida).
+Incluidas para que el generador de etiquetas (Node/pdfkit) sea autónomo.
